@@ -1,0 +1,32 @@
+# C/C++ build artifacts
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.so
+*.dylib
+*.dll
+*.lib
+*.exp
+*.pdb
+
+# Executables and run outputs
+speller
+speller.exe
+speller50
+*.out
+
+# CMake build directory
+build/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Editor temp files
+*~
+*.swp
+*.swo
+
+.vscode
