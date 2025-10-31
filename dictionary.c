@@ -16,7 +16,7 @@ typedef struct node
 #define N 936  //前8个单词，考虑了权重
 
 //我定义了一个全局变量来统计单词数量
-unsigned int wordcount=0
+unsigned int wordcount=0;
 
 // Hash table
 node *table[N];
@@ -24,21 +24,23 @@ node *table[N];
 // Returns true if word is in dictionary, else false
 bool check(const char *word)
 {
-    unsigned int nowindex1=hash(word);
-    //找到头节点
-    node*words=table[nowindex1];
     //把word小写
     char lowerword[LENGTH+1];
-    for(int i=0;word[i]!='\0';i++){
+    int l=strlen(word);
+    for(int i=0;i<l;i++){
         lowerword[i]=tolower(word[i]);
     }
     // 确保字符串以空字符终止(ps:这是我写完代码后询问ai我的代码准确性后ai给我提出的修改建议，平时我自己的代码编写过程中没有这个习惯)
-    lowerword[strlen(word)] = '\0'; 
+    lowerword[l] = '\0'; 
 
+    unsigned int nowindex1=hash(lowerword);
+    //找到头节点
+    node*words=table[nowindex1];
+    
     //开始遍历链表
     while(words!=NULL){
-        if(strcmp(words->word,tolower(word))){
-            return ture;
+        if(strcmp(words->word,lowerword)==0){
+            return true;
         }
        words=words->next; 
     }
@@ -66,10 +68,19 @@ bool load(const char *dictionary)
         table[i]=NULL;
     }
     FILE*file=fopen(dictionary,"r");
-    char wordbuffter[LENGTH+1];
+    //这步是我在代码完成后让ai帮我检查时ai给的修改建议（load 函数	内存分配检查	缺少对 malloc 返回值（newnode）的 NULL 检查。内存分配失败会导致程序崩溃。）
+    if(file==NULL){
+        return false;
+    }
+    
+    char wordbuffer[LENGTH+1];
     while(fscanf(file,"%s",wordbuffer)!=EOF){
         //想要读取新word，需要给word分配内存
         node*newnode=(node*)malloc(sizeof(node));
+        if(newnode==NULL){
+        fclose(file);
+        return false;
+    }
         // 将单词复制到新节点中
         strcpy(newnode->word,wordbuffer);
         unsigned int index=hash(newnode->word);
@@ -78,7 +89,7 @@ bool load(const char *dictionary)
         table[index]=newnode;
         wordcount++;
     }
-    flcose(file);
+    fclose(file);
     
     return true;
 }
