@@ -81,8 +81,13 @@ bool load(const char *dictionary)
         fclose(file);
         return false;
     }
-        // 将单词复制到新节点中
-        strcpy(newnode->word,wordbuffer);
+    //以下是我写完代码后ai帮我找出的错误
+    //load 函数	致命错误：大小写不一致	未解决： 您在 check 中是用 小写 的 lowerword 去查找。但是，在 load 中，您使用 strcpy(newnode->word, wordbuffer);，存入的是原始大小写的单词。如果字典文件中的单词不是纯小写，strcmp 就会失败，因为 strcmp 是大小写敏感的。
+    int l=strlen(wordbuffer);
+    for(int i=0;i<l;i++){
+      newnode->word[i] = tolower(wordbuffer[i]);
+    }
+    newnode->word[l] = '\0';
         unsigned int index=hash(newnode->word);
         //执行插入操作
         newnode->next=table[index];
